@@ -126,7 +126,7 @@ venv.bak/
 dmypy.json
 
 # Models
-./models/PT_Punctuator.pcl
+/models/PT_Punctuator.pcl
 
 # Pyre type checker
 .pyre/
