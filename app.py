@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from punctuator import Punctuator
 import sys
 import re
@@ -20,6 +20,11 @@ punctuate_model_name = 'PT_Punctuator.pcl'
 punctuate_model_directory = './punctuate_model/'
 punctuate_model_path = punctuate_model_directory + punctuate_model_name
 
+
+# blueprint for auth routes in our app
+from auth import auth as auth_blueprint
+app.register_blueprint(auth_blueprint)
+
 def punctuateTextFile(file_name):
     with open (file_name, "r") as file:
         text_to_punctuate = file.read()
@@ -40,8 +45,8 @@ def tokenize_sentences(punctuated_text):
     return transcript_sentences
 
 @app.route('/')
-def main():
-    return "Hello world"
+def index():
+    return render_template('index.html')
 
 @app.route('/process',  methods=['POST'])
 def trancribe():
