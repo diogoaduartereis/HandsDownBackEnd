@@ -2,16 +2,18 @@ from app import db
 from sqlalchemy.dialects.postgresql import JSON
 
 
-class Result(db.Model):
-    __tablename__ = 'transcriptions'
+class User(db.Model):
+    tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)
-    transcriptions = db.Column(JSON)
-    processed_transcriptions = db.Column(JSON)
+    id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
+    email = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))
+    name = db.Column(db.String(1000))
 
-    def __init__(self, transcriptions, processed_transcriptions):
-        self.transcriptions = transcriptions
-        self.processed_transcriptions = processed_transcriptions
+    def __init__(self, email, password, name):
+        self.email = email
+        self.password = password
+        self.name = name
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
