@@ -1,5 +1,6 @@
 import psycopg2
 from config import config
+from werkzeug.security import generate_password_hash
 
 
 def insert_vendor(user_name):
@@ -31,7 +32,12 @@ def insert_vendor(user_name):
 
 def insert_user_list(user_list):
     """ insert a new user into the users table """
-    sql = """INSERT INTO users(email, password, name) VALUES(%s, %s, %s)"""
+    sql = """INSERT INTO users(email, password, name) 
+             VALUES(%s, %s, %s)
+             ON CONFLICT ON CONSTRAINT users_email_key
+             DO
+             UPDATE
+	         SET password = EXCLUDED.password"""
     conn = None
     try:
         # read database configuration
@@ -54,6 +60,6 @@ def insert_user_list(user_list):
 
 if __name__ == "__main__":
      insert_user_list([
-        ('admin@admin.com', 'admin', 'admin',),
-        ('diogo@diogo.com', 'diogo', 'diogo',)
+        ('admin@admin.com', generate_password_hash('admin', method='sha256'), 'admin',),
+        ('diogo@diogo.com', generate_password_hash('diogo', method='sha256'), 'diogo',)
     ])

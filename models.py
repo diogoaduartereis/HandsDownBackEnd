@@ -1,8 +1,9 @@
 from app import db
 from sqlalchemy.dialects.postgresql import JSON
+from flask_login import UserMixin
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
