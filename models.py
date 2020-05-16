@@ -1,12 +1,12 @@
 from app import db
-from sqlalchemy.dialects.postgresql import JSON
+# from sqlalchemy.dialects.postgresql import JSON
 from flask_login import UserMixin
 
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
+    id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000))
@@ -15,6 +15,21 @@ class User(UserMixin, db.Model):
         self.email = email
         self.password = password
         self.name = name
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+
+class Transcription(db.Model):
+    __tablename__ = 'transcriptions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    processed_transcription = db.Column(db.Text)
+
+    def __init__(self, user_id, processed_transcription):
+        self.user_id = user_id
+        self.processed_transcription = processed_transcription
 
     def __repr__(self):
         return '<id {}>'.format(self.id)

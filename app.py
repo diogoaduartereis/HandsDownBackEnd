@@ -19,13 +19,15 @@ punctuate_model_name = 'PT_Punctuator.pcl'
 punctuate_model_directory = './punctuate_model/'
 punctuate_model_path = punctuate_model_directory + punctuate_model_name
 
+
 def punctuateTextFile(file_name):
-    with open (file_name, "r") as file:
+    with open(file_name, "r") as file:
         text_to_punctuate = file.read()
         text_to_punctuate = text_to_punctuate.lower()
         text_to_punctuate = text_to_punctuate.translate(str.maketrans('', '', string.punctuation))
         punctuated_text = model.punctuate(text_to_punctuate)
         tokenize_sentences(punctuated_text)
+
 
 def punctuateText(text):
     text_to_punctuate = text
@@ -34,9 +36,11 @@ def punctuateText(text):
     punctuated_text = model.punctuate(text_to_punctuate)
     return tokenize_sentences(punctuated_text)
 
+
 def tokenize_sentences(punctuated_text):
     transcript_sentences = sent_tokenize(punctuated_text)
     return transcript_sentences
+
 
 @app.route('/process',  methods=['POST'])
 def trancribe():
@@ -45,6 +49,7 @@ def trancribe():
     processed_transcriptions = punctuateText(transcription)
     response = {"processed_transcriptions": processed_transcriptions}
     return jsonify(response)
+
 
 def download_model_script():
     subprocess.call('./punctuate_model/./gdown.sh', shell=True)
@@ -57,7 +62,7 @@ def load_punctuate_model():
         return Punctuator(punctuate_model_path)
     else:
         download_model_script()
-    
+
 
 if __name__ == "__main__":
     model = load_punctuate_model()
