@@ -1,7 +1,5 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request
 from punctuator import Punctuator
-import sys
-import re
 import string
 from nltk.tokenize import sent_tokenize
 import os
@@ -24,7 +22,8 @@ def punctuateTextFile(file_name):
     with open(file_name, "r") as file:
         text_to_punctuate = file.read()
         text_to_punctuate = text_to_punctuate.lower()
-        text_to_punctuate = text_to_punctuate.translate(str.maketrans('', '', string.punctuation))
+        text_to_punctuate = text_to_punctuate.translate(
+            str.maketrans('', '', string.punctuation))
         punctuated_text = model.punctuate(text_to_punctuate)
         tokenize_sentences(punctuated_text)
 
@@ -32,7 +31,8 @@ def punctuateTextFile(file_name):
 def punctuateText(text):
     text_to_punctuate = text
     text_to_punctuate = text_to_punctuate.lower()
-    text_to_punctuate = text_to_punctuate.translate(str.maketrans('', '', string.punctuation))
+    text_to_punctuate = text_to_punctuate.translate(
+        str.maketrans('', '', string.punctuation))
     punctuated_text = model.punctuate(text_to_punctuate)
     return tokenize_sentences(punctuated_text)
 
@@ -53,7 +53,8 @@ def trancribe():
 
 def download_model_script():
     subprocess.call('./punctuate_model/./gdown.sh', shell=True)
-    subprocess.call('mv ' + punctuate_model_name + ' ' + punctuate_model_directory, shell=True)
+    subprocess.call('mv ' + punctuate_model_name + ' ' +
+                    punctuate_model_directory, shell=True)
     load_punctuate_model()
 
 
