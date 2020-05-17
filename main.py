@@ -19,7 +19,9 @@ def profile():
 @main.route('/transcriptions')
 @login_required
 def transcriptions():
-    transcription = Transcription.query.filter_by(
-        user_id=current_user.id).first()
-    print(transcription.processed_transcription)
-    return render_template('profile.html', name=current_user.name)
+    transcriptions = Transcription.query.filter_by(
+        user_id=current_user.id).all()
+
+    return render_template('transcriptions.html',
+                           user=current_user,
+                           transcriptions=transcriptions)

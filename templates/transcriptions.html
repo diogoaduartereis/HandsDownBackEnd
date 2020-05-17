@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="title">
-  Welcome, {{ name }}
-</h1>
+
+  {% for transcription in transcriptions %}
+    <p>{{transcription.processed_transcription}}</p>
+  {% endfor %}
+
 {% endblock %}

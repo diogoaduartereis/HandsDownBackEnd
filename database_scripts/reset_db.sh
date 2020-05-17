@@ -1,0 +1,2 @@
+dropdb handsdown_dev
+createdb handsdown_dev
