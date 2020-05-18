@@ -1,6 +1,8 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, json
 from flask_login import login_required, current_user
 from models import Transcription
+from app import db
+from datetime import datetime
 
 main = Blueprint('main', __name__)
 
@@ -25,3 +27,19 @@ def transcriptions():
     return render_template('transcriptions.html',
                            user=current_user,
                            transcriptions=transcriptions)
+
+
+@main.route('/transcription', methods=['POST'])
+# @login_required
+def transcription_post():
+    # user_id = current_user.id
+
+    # temporary static login
+    json_transcription = request.get_json()
+    user_id = json_transcription['user_id']
+    transcription_text = json_transcription['transcription_text']
+    transcription = Transcription(user_id, transcription_text)
+    db.session.add(transcription)
+    db.session.commit()
+
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
