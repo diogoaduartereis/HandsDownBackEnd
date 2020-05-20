@@ -2,20 +2,29 @@ from app import db
 # from sqlalchemy.dialects.postgresql import JSON
 from flask_login import UserMixin
 from sqlalchemy.sql import func
+import datetime
 
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)  # pks required by SQLAlchemy
-    email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
+    email = db.Column(db.String(255), unique=True, nullable = False)
+    password = db.Column(db.String(255))
     name = db.Column(db.String(1000))
+    time_created = db.Column(
+        db.DateTime(timezone=True),
+        server_default=func.now())
+    time_updated = db.Column(
+        db.DateTime(timezone=True),
+        onupdate=func.now())
+    admin = db.Column(db.Boolean, nullable = False, default=False)
 
-    def __init__(self, email, password, name):
+    def __init__(self, email, password, name, admin=False):
         self.email = email
         self.password = password
         self.name = name
+        self.admin = admin
 
     def __repr__(self):
         return '<id {}>'.format(self.id)

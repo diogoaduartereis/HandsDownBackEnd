@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, request, json
+from flask import Blueprint, render_template, request, json, url_for
 from flask_login import login_required, current_user
 from models import Transcription
-from app import db
+from app import db, app
 from datetime import datetime
 
 main = Blueprint('main', __name__)
@@ -21,12 +21,19 @@ def profile():
 @main.route('/transcriptions')
 @login_required
 def transcriptions():
+    page = request.args.get('page', 1, type=int)
     transcriptions = Transcription.query.filter_by(
-        user_id=current_user.id).all()
+        user_id=current_user.id).paginate(
+        page, app.config['POSTS_PER_PAGE'], False)
+    next_url = url_for('main.transcriptions', page=transcriptions.next_num) \
+        if transcriptions.has_next else None
+    prev_url = url_for('main.transcriptions', page=transcriptions.prev_num) \
+        if transcriptions.has_prev else None
 
     return render_template('transcriptions.html',
                            user=current_user,
-                           transcriptions=transcriptions)
+                           transcriptions=transcriptions, next_url=next_url,
+                           prev_url=prev_url)
 
 
 @main.route('/transcription', methods=['POST'])

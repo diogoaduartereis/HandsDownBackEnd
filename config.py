@@ -8,6 +8,8 @@ class Config(object):
     CSRF_ENABLED = True
     SECRET_KEY = 'JH0\x0e\xd5\xf45\xf0\xb0~-\x9cA2\xde\x19{KydT\x18\x1b\xf7'
     SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
+    THREADED = True
+    POSTS_PER_PAGE = 3
 
 
 class ProductionConfig(Config):
