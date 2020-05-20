@@ -1,6 +1,14 @@
 {% extends "transcriptions.html" %}
 
 {% block content %}
+<script>
+
+    function show_transcription(transcription_id) {
+      var base_url = window.location.origin;
+      window.location.href = base_url + "/transcription?id=" + transcription_id;
+    }
+    
+</script>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
         <div class="notification is-danger">
@@ -12,12 +20,11 @@
         <div class="transcriptions_container">
             <ul class="responsive-table">
                 <li class="table-header">
-                <div class="col col-1">Creation Date</div>
-                <div class="col col-2">Transcription</div>
+                    <div class="col col-1">Creation Date</div>
+                    <div class="col col-2">Transcription</div>
                 </li>
                 {% for transcription in transcriptions.items %}
                 <li onclick="return show_transcription('{{transcription.id}}')" class="table-row">
-                    <p style="display: none;">{{transcription.id}}</p>
                     <div class="col col-1" data-label="Creation Date">{{transcription.time_created.strftime('%Y-%m-%d %H:%M')}}</div>
                     <div class="col col-2" data-label="Transcription">{{transcription.processed_transcription}}</div>
                 </li>

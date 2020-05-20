@@ -1,5 +1,117 @@
 {% extends "transcriptions.html" %}
 
 {% block content %}
+<script>
+    function update_transcription(transcription_id) {
+        if (confirm("Are you sure you want to edit this transcription?")) {
+            var form = document.createElement("form");
+            var transcription_id_element = document.createElement("input"); 
+            var transcription_updated_text_element = document.createElement("input");  
+
+            form.method = "POST";
+            form.action = "/update_transcription";   
+
+            transcription_id_element.value=transcription_id;
+            transcription_id_element.name="transcription_id";
+            form.appendChild(transcription_id_element);  
+
+            transcription_updated_text_element.value=document.getElementById("updated_transcription").value;
+            transcription_updated_text_element.name="transcription_updated_text";
+            form.appendChild(transcription_updated_text_element);
+
+            document.body.appendChild(form);
+
+            form.submit();
+        } else {
+        console.log("You pressed Cancel!");
+        }
+    }
+
+    function show_alert(message){
+        if(message == 'UPDATED') {
+            alert("Successfully Updated Transcription");
+        }
+        else {
+            alert("Unexpected Error");
+        }
+    }
+</script>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <iframe onload="return show_alert('{{messages[0]}}')" style="display:none;" src="w" title="W"></iframe> 
+    {% endif %}
+{% endwith %}
+<div class="transcriptions_container">
+    <ul id="tableHeaderID" class="responsive-table">
+        <li class="table-header">
+            <div class="col col-1">Creation Date</div>
+            <div class="col col-2">Transcription</div>
+        </li>
+    </ul>
+    <ul class="responsive-table">
+        <li class="table-row">
+            <div class="col col-1 center-vertically" data-label="Creation Date">{{transcription.time_created.strftime('%Y-%m-%d %H:%M:%S')}}</div>
+            <div class="col col-2 center-vertically transcription" data-label="Transcription">
+                <textarea id="updated_transcription" class="editable-transcription">{{transcription.processed_transcription}}</textarea>
+            </div>
+        </li>
+    </ul>
+    <button onclick="return update_transcription('{{transcription.id}}')">
+        Edit Transcription
+    </button>
+</div>
+
+<style>
+    .responsive-table {
+        height: 100%;
+    }
+    .transcription {
+        height: 90%;
+        overflow: auto;
+        overflow-x: hidden;
+    }
+    .editable-transcription {
+        width: 99%; 
+        height: 95%;
+        resize: none;
+        box-sizing: border-box;
+        padding: 50px;
+        background-image: url('/static/img/linedpaper.png');
+        border-style: dotted;
+        border-width: 7px;
+        margin: 10px;
+    }
+    .center-vertically {
+        margin: auto;
+    }
+    #tableHeaderID {
+        max-height: 8vh;
+        margin-top: -50px;
+        text-align: center;
+    }
+    .responsive-table > .table-header {
+        margin: auto;
+    }
+    .transcriptions_container {
+        max-width: 80vw;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-top: 100px;
+    }
+    .responsive-table > li {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    .table-row {
+        height: 70vh;
+        text-align: justify;
+    }
+    .responsive-table > li:not(:first-child):hover {
+        cursor: initial;
+    }
+</style>
 
 {% endblock %}
