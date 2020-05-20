@@ -42,29 +42,19 @@
         </div>
     </section>
     <section>
-      {% if transcriptions.items|length > 0 %}
-        <div class="transcriptions_container">
-          <ul class="responsive-table">
-            <li class="table-header">
-              <div class="col col-1">Creation Date</div>
-              <div class="col col-2">Transcription</div>
-            </li>
-            {% for transcription in transcriptions.items %}
-              <li class="table-row">
-                <div class="col col-1" data-label="Creation Date">{{transcription.time_created.strftime('%Y-%m-%d %H:%M')}}</div>
-                <div class="col col-2" data-label="Transcription">{{transcription.processed_transcription}}</div>
-              </li>
-            {% endfor %}
-            {% for page_num in transcriptions.iter_pages() %}
-              {% if page_num %}
-                <a class="button" style="margin-left: inherit;" href="{{ url_for('main.transcriptions', page=page_num) }}">{{ page_num }}</a>
-              {% else %}
-                ...
-              {% endif %}
-            {% endfor %}
-        </div>
-      {% endif %}
+      {% block content %}
+      {% endblock %}
     </section>
 </body>
 
 </html>
+
+<script>
+
+function show_transcription(transcription_id)
+{
+  var base_url = window.location.origin;
+  window.location.href = base_url + "/transcription?id=" + transcription_id;
+}
+
+</script>

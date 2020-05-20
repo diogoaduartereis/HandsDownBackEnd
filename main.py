@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, json, url_for
+from flask import Blueprint, render_template, request, json, url_for, flash, redirect
 from flask_login import login_required, current_user
 from models import Transcription
 from app import db, app
@@ -30,11 +30,25 @@ def transcriptions():
     prev_url = url_for('main.transcriptions', page=transcriptions.prev_num) \
         if transcriptions.has_prev else None
 
-    return render_template('transcriptions.html',
+    return render_template('list_transcriptions.html',
                            user=current_user,
                            transcriptions=transcriptions, next_url=next_url,
                            prev_url=prev_url)
 
+
+@main.route('/transcription', methods=['GET'])
+@login_required
+def transcription_get():
+    transcription_id = request.args.get('id')
+    transcription = Transcription.query.filter_by(
+        user_id=current_user.id,
+        id=transcription_id).first()
+    
+    if transcription != None:
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    else:
+        flash('You do not have access to that transcription')
+        return redirect(url_for('main.transcriptions'))  # if user doesn't exist or password is wrong, reload the page
 
 @main.route('/transcription', methods=['POST'])
 # @login_required

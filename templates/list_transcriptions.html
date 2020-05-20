@@ -1,0 +1,35 @@
+{% extends "transcriptions.html" %}
+
+{% block content %}
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="notification is-danger">
+            {{ messages[0] }}
+        </div>
+    {% endif %}
+    {% endwith %}
+    {% if transcriptions.items|length > 0 %}
+        <div class="transcriptions_container">
+            <ul class="responsive-table">
+                <li class="table-header">
+                <div class="col col-1">Creation Date</div>
+                <div class="col col-2">Transcription</div>
+                </li>
+                {% for transcription in transcriptions.items %}
+                <li onclick="return show_transcription('{{transcription.id}}')" class="table-row">
+                    <p style="display: none;">{{transcription.id}}</p>
+                    <div class="col col-1" data-label="Creation Date">{{transcription.time_created.strftime('%Y-%m-%d %H:%M')}}</div>
+                    <div class="col col-2" data-label="Transcription">{{transcription.processed_transcription}}</div>
+                </li>
+                {% endfor %}
+                {% for page_num in transcriptions.iter_pages() %}
+                {% if page_num %}
+                    <a class="button" style="margin-left: inherit;" href="{{ url_for('main.transcriptions', page=page_num) }}">{{ page_num }}</a>
+                {% else %}
+                    ...
+                {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -11,7 +11,7 @@ def insert_transcription_list(transcription_list):
 
 if __name__ == "__main__":
     insert_transcription_list([(
-        1,
+        2,
         """ The SOAP note (an acronym for subjective, objective, assessment, and plan) is a method of documentation employed by healthcare providers to write out notes in a patient's chart, along with other common formats, such as the admission note.
         [1][2] Documenting patient encounters in the medical record is an integral part of practice workflow starting with appointment scheduling, patient check-in and exam, documentation of notes, check-out, rescheduling, and medical billing.
         [3] Additionally, it serves as a general cognitive framework for physicians to follow as they assess their patients.[1]
@@ -24,4 +24,4 @@ Generally, SOAP notes are used as a template to guide the information that physi
 Prehospital care providers such as emergency medical technicians may use the same format to communicate patient information to emergency department clinicians.[5]
 Due to its clear objectives, the SOAP note provides physicians a way to standardize the organization of a patient's information to reduce confusion when patients are seen by various members of healthcare professionals.[2] Many healthcare providers, 
 ranging from physicians to behavioral healthcare professionals to veterinarians, use the SOAP note format for their patient's initial visit and to monitor progress during follow-up care.[4][6][7]  """)
-        , (1, "Isto é uma transcrição pequena")])
+        , (2, "Isto é uma transcrição pequena")])
