@@ -16,7 +16,7 @@ db = SQLAlchemy(app)
 punctuate_model_name = 'PT_Punctuator.pcl'
 punctuate_model_directory = './punctuate_model/'
 punctuate_model_path = punctuate_model_directory + punctuate_model_name
-
+app.config['punctuate_model_path'] = punctuate_model_path
 
 def punctuateTextFile(file_name):
     with open(file_name, "r") as file:
@@ -26,20 +26,6 @@ def punctuateTextFile(file_name):
             str.maketrans('', '', string.punctuation))
         punctuated_text = model.punctuate(text_to_punctuate)
         tokenize_sentences(punctuated_text)
-
-
-def punctuateText(text):
-    text_to_punctuate = text
-    text_to_punctuate = text_to_punctuate.lower()
-    text_to_punctuate = text_to_punctuate.translate(
-        str.maketrans('', '', string.punctuation))
-    punctuated_text = model.punctuate(text_to_punctuate)
-    return tokenize_sentences(punctuated_text)
-
-
-def tokenize_sentences(punctuated_text):
-    transcript_sentences = sent_tokenize(punctuated_text)
-    return transcript_sentences
 
 
 @app.route('/process',  methods=['POST'])
@@ -59,14 +45,12 @@ def download_model_script():
 
 
 def load_punctuate_model():
-    if path.exists(punctuate_model_path):
-        return Punctuator(punctuate_model_path)
-    else:
+    if not path.exists(punctuate_model_path):
         download_model_script()
 
 
 if __name__ == "__main__":
-    model = load_punctuate_model()
+    load_punctuate_model()
 
     # blueprint for auth routes in our app
     from auth import auth as auth_blueprint
