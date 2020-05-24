@@ -46,7 +46,7 @@ def login_post():
         flash('Please check your login details and try again.')
         return redirect(url_for('auth.login'))  # if user doesn't exist or password is wrong, reload the page
 
-    login_user(user, remember=remember)
+    login_user(user, remember=True)
     return redirect(url_for('main.transcriptions'))
 
 @auth.route('/login_json', methods=['POST'])
@@ -54,14 +54,13 @@ def login_json():
     json_login = request.get_json()
     email = json_login['email']
     password = json_login['password']
-    # remember = True if json_login['remember'] else False
 
     user = User.query.filter_by(email=email).first()
 
     if not user or not check_password_hash(user.password, password):
         return json.dumps({'success': False}), 400, {'ContentType': 'application/json'}
 
-    login_user(user, remember=False)
+    # login_user(user, remember=False)
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 

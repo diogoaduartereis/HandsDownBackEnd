@@ -4,6 +4,8 @@ from models import Transcription
 from app import db, app, Punctuator, string
 from datetime import datetime
 from sqlalchemy import desc
+from models import User
+from werkzeug.security import check_password_hash
 
 main = Blueprint('main', __name__)
 
@@ -72,14 +74,27 @@ def tokenize_sentences(punctuated_text):
 
 
 @main.route('/transcription', methods=['POST'])
-@login_required
 def transcription_post():
-    model = Punctuator(app.config['punctuate_model_path'])
-
-    user_id = current_user.id
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
 
     json_transcription = request.get_json()
+    email = json_transcription['email']
+    password = json_transcription['password']
+    if not email:
+        return jsonify({"msg": "Missing email parameter"}), 400
+    if not password:
+        return jsonify({"msg": "Missing password parameter"}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if not user or not check_password_hash(user.password, password):
+        return json.dumps({'success': False}), 400, {'ContentType': 'application/json'}
+
+    model = Punctuator(app.config['punctuate_model_path'])
+
+    user_id = user.id
     transcription_text = json_transcription['transcription_text']
+
     processed_text = punctuateText(model, transcription_text)
     transcription = Transcription(user_id, processed_text)
     db.session.add(transcription)
