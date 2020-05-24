@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, request, json, url_for, flash, redirect
+from flask import Blueprint, render_template, request, json, url_for, flash, redirect, jsonify
 from flask_login import login_required, current_user
 from models import Transcription
 from app import db, app, Punctuator, string
 from datetime import datetime
 from sqlalchemy import desc
+from flask_jwt_extended import jwt_required
 
 main = Blueprint('main', __name__)
 
@@ -72,8 +73,11 @@ def tokenize_sentences(punctuated_text):
 
 
 @main.route('/transcription', methods=['POST'])
-@login_required
-def transcription_post():
+@jwt_required
+def transcription_post_json():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
     model = Punctuator(app.config['punctuate_model_path'])
 
     user_id = current_user.id

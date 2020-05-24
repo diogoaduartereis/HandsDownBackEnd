@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, request, redirect, flash, url_for, json
+from flask import Blueprint, render_template, request, redirect, flash, url_for, json, jsonify
 # from app import db
 from werkzeug.security import check_password_hash
 from models import User
 from flask_login import login_user, logout_user, login_required
+from flask_jwt_extended import (create_access_token, create_refresh_token, current_user)
 
 auth = Blueprint('auth', __name__)
 
@@ -49,20 +50,33 @@ def login_post():
     login_user(user, remember=remember)
     return redirect(url_for('main.transcriptions'))
 
+
 @auth.route('/login_json', methods=['POST'])
 def login_json():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
     json_login = request.get_json()
     email = json_login['email']
     password = json_login['password']
-    # remember = True if json_login['remember'] else False
+    if not email:
+        return jsonify({"msg": "Missing email parameter"}), 400
+    if not password:
+        return jsonify({"msg": "Missing password parameter"}), 400
 
     user = User.query.filter_by(email=email).first()
 
     if not user or not check_password_hash(user.password, password):
         return json.dumps({'success': False}), 400, {'ContentType': 'application/json'}
 
-    login_user(user, remember=False)
-    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    access_token = create_access_token(identity = email)
+    refresh_token = create_refresh_token(identity = email)
+    return jsonify({
+        'message': 'Logged in as {}'.format(email),
+        'access_token': access_token,
+        'refresh_token': refresh_token,
+        'success': True
+    }), 200
 
 
 @auth.route('/logout')

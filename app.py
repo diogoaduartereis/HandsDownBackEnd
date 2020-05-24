@@ -7,11 +7,13 @@ from flask_sqlalchemy import SQLAlchemy
 import subprocess
 from os import path
 from flask_login import LoginManager
+from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+jwt = JWTManager(app)
 
 punctuate_model_name = 'PT_Punctuator.pcl'
 punctuate_model_directory = './punctuate_model/'
@@ -63,6 +65,7 @@ if __name__ == "__main__":
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
+    
 
     from models import User
 
