@@ -83,7 +83,22 @@ def transcription_post_json():
     user_id = get_jwt_identity()
 
     json_transcription = request.get_json()
+    email = json_transcription['email']
+    password = json_transcription['password']
+    if not email:
+        return jsonify({"msg": "Missing email parameter"}), 400
+    if not password:
+        return jsonify({"msg": "Missing password parameter"}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if not user or not check_password_hash(user.password, password):
+        return json.dumps({'success': False}), 400, {'ContentType': 'application/json'}
+
+    model = Punctuator(app.config['punctuate_model_path'])
+
+    user_id = user.id
     transcription_text = json_transcription['transcription_text']
+
     processed_text = punctuateText(model, transcription_text)
     transcription = Transcription(user_id, processed_text)
     db.session.add(transcription)

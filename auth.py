@@ -48,7 +48,7 @@ def login_post():
         flash('Please check your login details and try again.')
         return redirect(url_for('auth.login'))  # if user doesn't exist or password is wrong, reload the page
 
-    login_user(user, remember=remember)
+    login_user(user, remember=True)
     return redirect(url_for('main.transcriptions'))
 
 
@@ -89,6 +89,7 @@ def refresh():
         'access_token': create_access_token(identity=current_user)
     }
     return jsonify(ret), 200
+
 
 @auth.route('/logout')
 @login_required
