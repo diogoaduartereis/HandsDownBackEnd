@@ -3,7 +3,8 @@ from flask import Blueprint, render_template, request, redirect, flash, url_for,
 from werkzeug.security import check_password_hash
 from models import User
 from flask_login import login_user, logout_user, login_required
-from flask_jwt_extended import (create_access_token, create_refresh_token, current_user)
+from flask_jwt_extended import (create_access_token, create_refresh_token, current_user, jwt_refresh_token_required)
+import datetime
 
 auth = Blueprint('auth', __name__)
 
@@ -69,8 +70,10 @@ def login_json():
     if not user or not check_password_hash(user.password, password):
         return json.dumps({'success': False}), 400, {'ContentType': 'application/json'}
 
-    access_token = create_access_token(identity = email)
-    refresh_token = create_refresh_token(identity = email)
+    expires = datetime.timedelta(hours=12)
+
+    access_token = create_access_token(identity = user.id, expires_delta=expires)
+    refresh_token = create_refresh_token(identity = user.id)
     return jsonify({
         'message': 'Logged in as {}'.format(email),
         'access_token': access_token,
@@ -78,6 +81,14 @@ def login_json():
         'success': True
     }), 200
 
+@auth.route('/refresh', methods=['POST'])
+@jwt_refresh_token_required
+def refresh():
+    current_user = get_jwt_identity()
+    ret = {
+        'access_token': create_access_token(identity=current_user)
+    }
+    return jsonify(ret), 200
 
 @auth.route('/logout')
 @login_required

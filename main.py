@@ -4,7 +4,7 @@ from models import Transcription
 from app import db, app, Punctuator, string
 from datetime import datetime
 from sqlalchemy import desc
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 main = Blueprint('main', __name__)
 
@@ -80,7 +80,7 @@ def transcription_post_json():
 
     model = Punctuator(app.config['punctuate_model_path'])
 
-    user_id = current_user.id
+    user_id = get_jwt_identity()
 
     json_transcription = request.get_json()
     transcription_text = json_transcription['transcription_text']
