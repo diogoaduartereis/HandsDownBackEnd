@@ -74,8 +74,10 @@ def login_json():
 
     access_token = create_access_token(identity = user.id, expires_delta=expires)
     refresh_token = create_refresh_token(identity = user.id)
+    
     return jsonify({
         'message': 'Logged in as {}'.format(email),
+        'name': user.name,
         'access_token': access_token,
         'refresh_token': refresh_token,
         'success': True
