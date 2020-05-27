@@ -29,14 +29,38 @@
                     <div class="col col-2" data-label="Transcription">{{transcription.processed_transcription}}</div>
                 </li>
                 {% endfor %}
-                {% for page_num in transcriptions.iter_pages() %}
-                {% if page_num %}
-                    <a class="button" style="margin-left: inherit;" href="{{ url_for('main.transcriptions', page=page_num) }}">{{ page_num }}</a>
-                {% else %}
-                    ...
-                {% endif %}
-                {% endfor %}
+                <div id="pagination">
+                    {% if prev_url %}
+                        <a class="button" href="{{ prev_url }}">Previous</a>
+                    {% endif %}
+
+                    {% for page_num in transcriptions.iter_pages() %}
+                    {% if page_num %}
+                        {%if page==page_num %}
+                            <a class="button current_page" href="{{ url_for('main.transcriptions', page=page_num) }}">{{ page_num }}</a>
+                        {% else %}
+                            <a class="button" href="{{ url_for('main.transcriptions', page=page_num) }}">{{ page_num }}</a>
+                        {% endif %}
+                    {% else %}
+                        ...
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if next_url %}
+                    <a class="button" href="{{ next_url }}">Next</a>
+                    {% endif %}
+                </div>
             </ul>
         </div>
     {% endif %}
+
+    <style>
+        #pagination {
+            text-align: center;
+        }
+        .current_page {
+            background-color: gray;
+            border-color: gray;
+        }
+    </style>
 {% endblock %}

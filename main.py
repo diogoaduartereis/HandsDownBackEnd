@@ -36,7 +36,7 @@ def transcriptions():
     return render_template('list_transcriptions.html',
                            user=current_user,
                            transcriptions=transcriptions, next_url=next_url,
-                           prev_url=prev_url)
+                           prev_url=prev_url, page=page)
 
 
 @main.route('/transcription', methods=['GET'])
