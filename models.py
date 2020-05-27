@@ -35,6 +35,7 @@ class Transcription(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer)
+    transcription = db.Column(db.Text)
     processed_transcription = db.Column(db.Text)
 
     time_created = db.Column(
@@ -44,8 +45,9 @@ class Transcription(db.Model):
         db.DateTime(timezone=True),
         onupdate=func.now())
 
-    def __init__(self, user_id, processed_transcription):
+    def __init__(self, user_id, transcription, processed_transcription):
         self.user_id = user_id
+        self.transcription = transcription
         self.processed_transcription = processed_transcription
 
     def __repr__(self):

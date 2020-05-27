@@ -84,7 +84,7 @@ def transcription_post_json():
     transcription_text = json_transcription['transcription_text']
 
     processed_text = punctuateText(model, transcription_text)
-    transcription = Transcription(user_id, processed_text)
+    transcription = Transcription(user_id, transcription_text, processed_text)
     db.session.add(transcription)
     failed=False
     try:

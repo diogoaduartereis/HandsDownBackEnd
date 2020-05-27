@@ -15,7 +15,7 @@
             transcription_id_element.name="transcription_id";
             form.appendChild(transcription_id_element);  
 
-            transcription_updated_text_element.value=document.getElementById("updated_transcription").value;
+            transcription_updated_text_element.value=document.getElementById("structured_transcription").value;
             transcription_updated_text_element.name="transcription_updated_text";
             form.appendChild(transcription_updated_text_element);
 
@@ -67,13 +67,17 @@
         <li class="table-header">
             <div class="col col-1">Creation Date</div>
             <div class="col col-2">Transcription</div>
+            <div class="col col-3">Structured Transcription</div>
         </li>
     </ul>
     <ul class="responsive-table">
         <li class="table-row">
             <div class="col col-1 center-vertically" data-label="Creation Date">{{transcription.time_created.strftime('%Y-%m-%d %H:%M:%S')}}</div>
             <div class="col col-2 center-vertically transcription" data-label="Transcription">
-                <textarea id="updated_transcription" class="editable-transcription">{{transcription.processed_transcription}}</textarea>
+                <div class="uneditable-transcription">{{transcription.transcription}}</div>
+            </div>
+            <div class="col col-3 center-vertically transcription" data-label="Structured Transcription">
+                <textarea id="structured_transcription" class="editable-transcription">{{transcription.processed_transcription}}</textarea>
             </div>
         </li>
     </ul>
@@ -86,6 +90,13 @@
 </div>
 
 <style>
+    .col-2 {
+      flex-basis: 40%;
+      overflow-y: auto;
+    }
+    .col-3 {
+      flex-basis: 40%;
+    }
     .responsive-table {
         height: 100%;
     }
@@ -104,6 +115,16 @@
         border-style: dotted;
         border-width: 7px;
         margin: 10px;
+    }
+    .uneditable-transcription {
+        width: 99%; 
+        height: 95%;
+        resize: none;
+        box-sizing: border-box;
+        padding: 50px;
+        border-width: 7px;
+        margin: 10px;
+        color: black;
     }
     .center-vertically {
         margin: auto;
