@@ -77,7 +77,32 @@
                 <div class="uneditable-transcription">{{transcription.transcription}}</div>
             </div>
             <div class="col col-3 center-vertically transcription" data-label="Structured Transcription">
-                <textarea id="structured_transcription" class="editable-transcription">{{transcription.processed_transcription}}</textarea>
+                <table style="width:100%;" class="transcriptionTable" cellborder="1">
+                    <tr class="soapRow">
+                        <td class="subjectiveHeader">S</td>
+                        <td>
+                            <textarea id="structured_transcription" class="editable-transcription">{{transcription.processed_transcription}}</textarea>
+                        </td>
+                    </tr>
+                    <tr class="soapRow">
+                        <td class="subjectiveHeader">O</td>
+                        <td>
+                            <textarea id="structured_transcription" class="editable-transcription">{{transcription.processed_transcription}}</textarea>
+                        </td>
+                    </tr>
+                    <tr class="soapRow">
+                        <td class="subjectiveHeader">A</td>
+                        <td>
+                            <textarea id="structured_transcription" class="editable-transcription">{{transcription.processed_transcription}}</textarea>
+                        </td>
+                    </tr>
+                    <tr class="soapRow">
+                        <td class="subjectiveHeader">P</td>
+                        <td>
+                            <textarea id="structured_transcription" class="editable-transcription">{{transcription.processed_transcription}}</textarea>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </li>
     </ul>
@@ -90,6 +115,22 @@
 </div>
 
 <style>    
+    .transcriptionTable {
+        border-collapse: separate;
+        border-spacing: 0 15px;
+        margin-top: 10px;
+    }
+    .soapRow {
+        border: grey;
+        border-style: solid;
+    }
+    .subjectiveHeader {
+        text-align: center;
+        vertical-align: middle;
+        color: rgb(24, 103, 250);
+        background-color: rgb(175, 175, 175);
+        font-size: 2em;
+    }
     .col-1 {
      flex-basis: 10%;
     }
@@ -104,7 +145,7 @@
         height: 100%;
     }
     .transcription {
-        height: 90%;
+        height: 100%;
         overflow: auto;
         overflow-x: hidden;
     }
@@ -112,12 +153,9 @@
         width: 99%; 
         height: 95%;
         resize: none;
-        box-sizing: border-box;
         padding: 50px;
         background-image: url('/static/img/linedpaper.png');
-        border-style: dotted;
-        border-width: 7px;
-        margin: 10px;
+        border-style: none;
     }
     .uneditable-transcription {
         width: 99%; 
