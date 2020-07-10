@@ -29,8 +29,8 @@ if __name__ == "__main__":
             generate_password_hash('admin', method='sha256'),
             'admin',
             True),
-        ('diogo@diogo.com',
-            generate_password_hash('diogo', method='sha256'),
-            'diogo',
+        ('test@test.com',
+            generate_password_hash('teste', method='sha256'),
+            'teste',
             False)
     ])

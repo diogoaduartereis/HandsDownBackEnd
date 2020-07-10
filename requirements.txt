@@ -18,6 +18,8 @@ contextlib2==0.6.0
 cryptography==2.9.2
 distlib==0.3.0
 distro==1.4.0
+dnspython==1.16.0
+email-validator==1.1.1
 filelock==3.0.12
 flake8==3.8.1
 Flask==1.0.2
@@ -32,6 +34,7 @@ Flask-Paranoid==0.2.0
 Flask-Principal==0.4.0
 Flask-Script==2.0.6
 Flask-Security==3.0.0
+Flask-Security-Too==3.4.3
 Flask-SQLAlchemy==2.3.2
 Flask-WTF==0.14.2
 gast==0.3.3
@@ -57,6 +60,7 @@ Keras==2.3.1
 Keras-Applications==1.0.8
 Keras-Preprocessing==1.1.2
 lazy-object-proxy==1.4.3
+ldap3==2.7
 lockfile==0.12.2
 Mako==1.1.2
 Markdown==3.2.2
@@ -72,7 +76,7 @@ paramiko==2.7.1
 params-flow==0.8.2
 passlib==1.7.1
 pep517==0.8.2
-pgadmin4==4.17
+pgadmin4 @ https://ftp.postgresql.org/pub/pgadmin/pgadmin4/v4.23/pip/pgadmin4-4.23-py3-none-any.whl
 progress==1.5
 protobuf==3.12.2
 psutil==5.5.1

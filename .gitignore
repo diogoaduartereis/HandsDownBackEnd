@@ -142,3 +142,4 @@ static/data/credentials.json
 
 # Classifier Model
 classifier_model/saved_model
+classifier_model/model.zip
