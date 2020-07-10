@@ -8,9 +8,20 @@ import subprocess
 from os import path
 from flask_login import LoginManager
 from flask_jwt_extended import JWTManager
+import tensorflow as tf
+from tensorflow import keras
+import bert
+from bert import BertModelLayer
+from bert.loader import StockBertConfig, map_stock_config_to_params, load_stock_weights
+from bert.tokenization.bert_tokenization import FullTokenizer
+import math
+import datetime
+import numpy as np
+import config
+
 
 app = Flask(__name__)
-app.config.from_object(os.environ['APP_SETTINGS'])
+app.config.from_object(config.ProductionConfig)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
@@ -19,6 +30,17 @@ punctuate_model_name = 'PT_Punctuator.pcl'
 punctuate_model_directory = './punctuate_model/'
 punctuate_model_path = punctuate_model_directory + punctuate_model_name
 app.config['punctuate_model_path'] = punctuate_model_path
+punctuator_model = Punctuator(app.config['punctuate_model_path'])
+
+classifier_model_name = 'saved_model/my_model'
+classifier_model_directory = './classifier_model/'
+classifier_model_path = classifier_model_directory + classifier_model_name
+app.config['classifier_model_path'] = classifier_model_path
+classifier_model = tf.keras.models.load_model(app.config['classifier_model_path'])
+vocab_path = classifier_model_directory + 'vocab.txt'
+tokenizer = FullTokenizer(
+  vocab_file=vocab_path
+)
 
 def punctuateTextFile(file_name):
     with open(file_name, "r") as file:
@@ -43,7 +65,6 @@ def download_model_script():
     subprocess.call('./punctuate_model/./gdown.sh', shell=True)
     subprocess.call('mv ' + punctuate_model_name + ' ' +
                     punctuate_model_directory, shell=True)
-    load_punctuate_model()
 
 
 def load_punctuate_model():
@@ -51,8 +72,18 @@ def load_punctuate_model():
         download_model_script()
 
 
+def download_classifier_model_script():
+    subprocess.call('./classifier_model/./classifier_model_download.sh', shell=True)
+    subprocess.call('mv ' + classifier_model_name + ' ' +
+                    classifier_model_directory, shell=True)
+
+def load_classifier_model():
+    if not path.exists(classifier_model_path):
+        download_classifier_model_script()
+
 if __name__ == "__main__":
     load_punctuate_model()
+    #load_classifier_model()
 
     # blueprint for auth routes in our app
     from auth import auth as auth_blueprint

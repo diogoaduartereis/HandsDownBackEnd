@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, json, url_for, flash, redirect, jsonify
 from flask_login import login_required, current_user
 from models import Transcription
-from app import db, app, Punctuator, string
+from app import db, app, Punctuator, string, punctuator_model
 from datetime import datetime
 from sqlalchemy import desc
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -57,12 +57,12 @@ def transcription_show():
 
 ########################################################################
 
-def punctuateText(model, text):
+def punctuateText(text):
     text_to_punctuate = text
     text_to_punctuate = text_to_punctuate.lower()
     text_to_punctuate = text_to_punctuate.translate(
         str.maketrans('', '', string.punctuation))
-    punctuated_text = model.punctuate(text_to_punctuate)
+    punctuated_text = punctuator_model.punctuate(text_to_punctuate)
     return punctuated_text
     # return tokenize_sentences(punctuated_text)
 
@@ -79,11 +79,11 @@ def transcription_post_json():
         return jsonify({"msg": "Missing JSON in request"}), 400
 
     json_transcription = request.get_json()
-    model = Punctuator(app.config['punctuate_model_path'])
+    #model = Punctuator(app.config['punctuate_model_path'])
     user_id = get_jwt_identity()
     transcription_text = json_transcription['transcription_text']
 
-    processed_text = punctuateText(model, transcription_text)
+    processed_text = punctuateText(transcription_text)
     transcription = Transcription(user_id, transcription_text, processed_text)
     db.session.add(transcription)
     failed=False
@@ -98,6 +98,35 @@ def transcription_post_json():
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
+
+def categorize_sentences(text):
+    return text
+
+@main.route('/transcription/english', methods=['POST'])
+@jwt_required
+def transcription_english_post_json():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
+    json_transcription = request.get_json()
+    #model = Punctuator(app.config['punctuate_model_path'])
+    user_id = get_jwt_identity()
+    transcription_text = json_transcription['transcription_text']
+
+    processed_text = json_transcription['transcription_text']
+    transcription = Transcription(user_id, transcription_text, processed_text)
+    db.session.add(transcription)
+    failed=False
+    try:
+        db.session.commit()
+    except Exception as e:
+        #log your exception in the way you want -> log to file, log as error with default logging, send by email. It's upon you
+        db.session.rollback()
+        db.session.flush() # for resetting non-commited .add()
+        failed=True
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 ####################################################################################33
 
 @main.route('/update_transcription', methods=['POST'])

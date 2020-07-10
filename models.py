@@ -45,10 +45,19 @@ class Transcription(db.Model):
         db.DateTime(timezone=True),
         onupdate=func.now())
 
-    def __init__(self, user_id, transcription, processed_transcription):
+    subjective = db.Column(db.Text)
+    objective = db.Column(db.Text)
+    assessment = db.Column(db.Text)
+    plan = db.Column(db.Text)
+
+    def __init__(self, user_id, transcription, processed_transcription, subjective, objective, assessment, plan):
         self.user_id = user_id
         self.transcription = transcription
         self.processed_transcription = processed_transcription
+        self.subjective = subjective
+        self.objective = objective
+        self.assessment = assessment
+        self.plan = plan
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
