@@ -86,7 +86,12 @@ def transcription_post_json():
     transcription_text = json_transcription['transcription_text']
 
     processed_text = punctuateText(transcription_text)
-    transcription = Transcription(user_id, transcription_text, processed_text)
+    subjective = ""
+    objective = ""
+    assessment = ""
+    plan = ""
+
+    transcription = Transcription(user_id, transcription_text, processed_text, subjective=subjective, objective=objective, assessment=assessment, plan=plan)
     db.session.add(transcription)
     failed=False
     try:
