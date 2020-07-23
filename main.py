@@ -1,10 +1,12 @@
 from flask import Blueprint, render_template, request, json, url_for, flash, redirect, jsonify
 from flask_login import login_required, current_user
 from models import Transcription
-from app import db, app, Punctuator, string
+from app import db, app, Punctuator, string, punctuator_model, classifier_model, tokenizer
 from datetime import datetime
 from sqlalchemy import desc
 from flask_jwt_extended import jwt_required, get_jwt_identity
+import numpy as np
+from nltk import sent_tokenize
 
 main = Blueprint('main', __name__)
 
@@ -57,12 +59,12 @@ def transcription_show():
 
 ########################################################################
 
-def punctuateText(model, text):
+def punctuateText(text):
     text_to_punctuate = text
     text_to_punctuate = text_to_punctuate.lower()
     text_to_punctuate = text_to_punctuate.translate(
         str.maketrans('', '', string.punctuation))
-    punctuated_text = model.punctuate(text_to_punctuate)
+    punctuated_text = punctuator_model.punctuate(text_to_punctuate)
     return punctuated_text
     # return tokenize_sentences(punctuated_text)
 
@@ -79,12 +81,17 @@ def transcription_post_json():
         return jsonify({"msg": "Missing JSON in request"}), 400
 
     json_transcription = request.get_json()
-    model = Punctuator(app.config['punctuate_model_path'])
+    #model = Punctuator(app.config['punctuate_model_path'])
     user_id = get_jwt_identity()
     transcription_text = json_transcription['transcription_text']
 
-    processed_text = punctuateText(model, transcription_text)
-    transcription = Transcription(user_id, transcription_text, processed_text)
+    processed_text = punctuateText(transcription_text)
+    subjective = ""
+    objective = ""
+    assessment = ""
+    plan = ""
+
+    transcription = Transcription(user_id, transcription_text, processed_text, subjective=subjective, objective=objective, assessment=assessment, plan=plan)
     db.session.add(transcription)
     failed=False
     try:
@@ -98,20 +105,99 @@ def transcription_post_json():
 
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
+
+def categorize_sentences(text):
+    classes = [
+        "Subjective",
+        "Irrelevant",
+        "Plan",
+        "Objective",
+        "Assessment"
+    ]
+
+    sentences = sent_tokenize(text)
+
+    pred_tokens = map(tokenizer.tokenize, sentences)
+    pred_tokens = map(lambda tok: ["[CLS]"] + tok + ["[SEP]"], pred_tokens)
+    pred_token_ids = list(map(tokenizer.convert_tokens_to_ids, pred_tokens))
+
+    pred_token_ids = map(
+    lambda tids: tids +[0]*(128-len(tids)),
+    pred_token_ids
+    )
+    pred_token_ids = np.array(list(pred_token_ids))
+
+    predictions = classifier_model.predict(pred_token_ids).argmax(axis=-1)
+
+    processed_sentences = []
+    for text, label in zip(sentences, predictions):
+        processed_sentences.append([text, classes[label]])
+    
+    return processed_sentences
+
+@main.route('/transcription/english', methods=['POST'])
+@jwt_required
+def transcription_english_post_json():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
+    json_transcription = request.get_json()
+    #model = Punctuator(app.config['punctuate_model_path'])
+    user_id = get_jwt_identity()
+    transcription_text = json_transcription['transcription_text']
+
+    processed_text = json_transcription['transcription_text']
+    categorized_sentences = categorize_sentences(processed_text)
+
+    subjective = ""
+    objective = ""
+    assessment = ""
+    plan = ""
+
+    for sentence in categorized_sentences:
+        if sentence[1] == 'Subjective':
+            subjective += " " + sentence[0]
+        elif sentence[1] == 'Objective':
+            objective += " " + sentence[0]
+        elif sentence[1] == 'Assessment':
+            assessment += " " + sentence[0]
+        elif sentence[1] == 'Plan':
+            plan += " " + sentence[0]
+        else:
+            continue
+
+    transcription = Transcription(user_id, transcription_text, processed_text, subjective=subjective, objective=objective, assessment=assessment, plan=plan)
+    db.session.add(transcription)
+    failed=False
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        db.session.flush() # for resetting non-commited .add()
+        failed=True
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
+
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 ####################################################################################33
 
 @main.route('/update_transcription', methods=['POST'])
 @login_required
 def transcription_update():
     transcription_id = request.form.get('transcription_id')
-    transcription_updated_text = request.form.get('transcription_updated_text')
+    subjective = request.form.get('transcription_subjective')
+    objective = request.form.get('transcription_objective')
+    assessment = request.form.get('transcription_assessment')
+    plan = request.form.get('transcription_plan')
     user_id = current_user.id
     transcription = Transcription.query.filter_by(
         user_id=current_user.id,
         id=transcription_id).first()
 
     if transcription != None:
-        transcription.processed_transcription = transcription_updated_text
+        transcription.subjective = subjective
+        transcription.objective = objective
+        transcription.assessment = assessment
+        transcription.plan = plan
         failed=False
         try:
             db.session.commit()

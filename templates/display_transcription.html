@@ -6,7 +6,10 @@
         if (confirm("Are you sure you want to edit this transcription?")) {
             var form = document.createElement("form");
             var transcription_id_element = document.createElement("input"); 
-            var transcription_updated_text_element = document.createElement("input");  
+            var transcription_updated_subjective_element = document.createElement("input");  
+            var transcription_updated_objective_element = document.createElement("input");  
+            var transcription_updated_assessment_element = document.createElement("input"); 
+            var transcription_updated_plan_element = document.createElement("input");
 
             form.method = "POST";
             form.action = "/update_transcription";   
@@ -15,9 +18,21 @@
             transcription_id_element.name="transcription_id";
             form.appendChild(transcription_id_element);  
 
-            transcription_updated_text_element.value=document.getElementById("structured_transcription").value;
-            transcription_updated_text_element.name="transcription_updated_text";
-            form.appendChild(transcription_updated_text_element);
+            transcription_updated_subjective_element.value=document.getElementById("subjective").value;
+            transcription_updated_subjective_element.name="transcription_subjective";
+            form.appendChild(transcription_updated_subjective_element);
+
+            transcription_updated_objective_element.value=document.getElementById("objective").value;
+            transcription_updated_objective_element.name="transcription_objective";
+            form.appendChild(transcription_updated_objective_element);
+
+            transcription_updated_assessment_element.value=document.getElementById("assessment").value;
+            transcription_updated_assessment_element.name="transcription_assessment";
+            form.appendChild(transcription_updated_assessment_element);
+
+            transcription_updated_plan_element.value=document.getElementById("plan").value;
+            transcription_updated_plan_element.name="transcription_plan";
+            form.appendChild(transcription_updated_plan_element);
 
             document.body.appendChild(form);
 
@@ -74,32 +89,32 @@
         <li class="table-row">
             <div class="col col-1 center-vertically" data-label="Creation Date">{{transcription.time_created.strftime('%Y-%m-%d %H:%M:%S')}}</div>
             <div class="col col-2 center-vertically transcription" data-label="Transcription">
-                <div class="uneditable-transcription">{{transcription.transcription}}</div>
+                <div class="uneditable-transcription">{{transcription.processed_transcription}}</div>
             </div>
             <div class="col col-3 center-vertically transcription" data-label="Structured Transcription">
                 <table style="width:100%;" class="transcriptionTable" cellborder="1">
                     <tr class="soapRow">
                         <td class="subjectiveHeader">S</td>
                         <td>
-                            <textarea id="structured_transcription" class="editable-transcription">{{transcription.processed_transcription}}</textarea>
+                            <textarea id="subjective" class="editable-transcription">{{transcription.subjective}}</textarea>
                         </td>
                     </tr>
                     <tr class="soapRow">
                         <td class="subjectiveHeader">O</td>
                         <td>
-                            <textarea id="structured_transcription" class="editable-transcription">{{transcription.processed_transcription}}</textarea>
+                            <textarea id="objective" class="editable-transcription">{{transcription.objective}}</textarea>
                         </td>
                     </tr>
                     <tr class="soapRow">
                         <td class="subjectiveHeader">A</td>
                         <td>
-                            <textarea id="structured_transcription" class="editable-transcription">{{transcription.processed_transcription}}</textarea>
+                            <textarea id="assessment" class="editable-transcription">{{transcription.assessment}}</textarea>
                         </td>
                     </tr>
                     <tr class="soapRow">
                         <td class="subjectiveHeader">P</td>
                         <td>
-                            <textarea id="structured_transcription" class="editable-transcription">{{transcription.processed_transcription}}</textarea>
+                            <textarea id="plan" class="editable-transcription">{{transcription.plan}}</textarea>
                         </td>
                     </tr>
                 </table>
